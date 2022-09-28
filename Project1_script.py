@@ -8,7 +8,7 @@ filename = 'data.csv'
 df = pd.read_csv(filename)
 
 raw_data = df.values  
-cols = range(0, 11) 
+cols = range(1, 10) 
 X = raw_data[:, cols]
 attributeNames = np.asarray(df.columns[cols])
 
@@ -19,11 +19,15 @@ y = np.array([classDict[cl] for cl in classLabels])
 N, M = X.shape
 C = len(classNames)
 
+classLabelss = raw_data[:,5]
+classNamess = sorted(set(classLabelss))
+classDicts = dict(zip(classNamess, range(2)))
+ys = np.asarray([classDicts[value] for value in classLabelss])
 
-Xn = np.delete(X,[0,5,10],1)
+Xn = np.delete(X,4,1)
 B, D = Xn.shape
 Xn = Xn.astype(float)
-attributeNamesXn=np.delete(attributeNames,[0,5,10])
+attributeNamesXn=np.delete(attributeNames,4)
 y1 = Xn - np.ones((B, 1))*Xn.mean(0)
 y1 = y1*(1/np.std(y1,0))
 
@@ -31,7 +35,7 @@ boxplot(y1)
 xticks(range(1,9),attributeNamesXn)
 show()
 
-Attributes = [1,2,3,4,5,6,7]
+Attributes = [0,1,2,3,5,6,7,8]
 NumAtr = len(Attributes)
 
 figure(figsize=(12,12))
@@ -40,7 +44,7 @@ for m1 in range(NumAtr):
         subplot(NumAtr, NumAtr, m1*NumAtr + m2 + 1)
         for c in range(C):
             class_mask = (y==c)
-            plot(Xn[class_mask,Attributes[m2]], Xn[class_mask,Attributes[m1]], '.')
+            plot(X[class_mask,Attributes[m2]], X[class_mask,Attributes[m1]], '.')
             if m1==NumAtr-1:
                 xlabel(attributeNames[Attributes[m2]])
             else:
