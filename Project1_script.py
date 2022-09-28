@@ -9,30 +9,39 @@ df = pd.read_csv(filename)
 
 raw_data = df.values  
 cols = range(1, 10) 
+
+classLabelss = raw_data[:,5]
+classNamess = sorted(set(classLabelss))
+classDicts = dict(zip(classNamess, range(2)))
+raw_data[:,5] = np.asarray([classDicts[value] for value in classLabelss])
+
 X = raw_data[:, cols]
+X = X.astype(float)
+
 attributeNames = np.asarray(df.columns[cols])
 
 classLabels = raw_data[:,-1]
 classNames = np.unique(classLabels)
 classDict = dict(zip(classNames,range(len(classNames))))
 y = np.array([classDict[cl] for cl in classLabels])
+
 N, M = X.shape
 C = len(classNames)
 
-classLabelss = raw_data[:,5]
-classNamess = sorted(set(classLabelss))
-classDicts = dict(zip(classNamess, range(2)))
-ys = np.asarray([classDicts[value] for value in classLabelss])
-
 Xn = np.delete(X,4,1)
 B, D = Xn.shape
-Xn = Xn.astype(float)
 attributeNamesXn=np.delete(attributeNames,4)
+
 y1 = Xn - np.ones((B, 1))*Xn.mean(0)
 y1 = y1*(1/np.std(y1,0))
-
 boxplot(y1)
 xticks(range(1,9),attributeNamesXn)
+show()
+
+y2 = X - np.ones((B, 1))*X.mean(0)
+y2 = y2*(1/np.std(y2,0))
+boxplot(y2)
+xticks(range(1,10),attributeNames)
 show()
 
 Attributes = [0,1,2,3,5,6,7,8]
