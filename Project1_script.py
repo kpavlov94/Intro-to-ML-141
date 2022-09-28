@@ -32,19 +32,24 @@ Xn = np.delete(X,4,1)
 B, D = Xn.shape
 attributeNamesXn=np.delete(attributeNames,4)
 
+##Boxplot for each attribute except for famhist
+#standardizing the data
 y1 = Xn - np.ones((B, 1))*Xn.mean(0)
 y1 = y1*(1/np.std(y1,0))
 boxplot(y1)
 xticks(range(1,9),attributeNamesXn)
 show()
 
+##Boxplot for each attribute with famhist
+#standardizing the data
 y2 = X - np.ones((B, 1))*X.mean(0)
 y2 = y2*(1/np.std(y2,0))
 boxplot(y2)
 xticks(range(1,10),attributeNames)
 show()
 
-Attributes = [0,1,2,3,5,6,7,8]
+##Correlations between attributes
+Attributes = [0,1,2,3,4,5,6,7,8]
 NumAtr = len(Attributes)
 
 figure(figsize=(12,12))
@@ -65,6 +70,9 @@ for m1 in range(NumAtr):
 legend(classNames)
 show()
 
+##Computing the PCA of the Data and 
+##plotting the percent of variance explained by the principal components as well as the cumulative variance
+
 # Subtract mean value from data
 Y = Xn - np.ones((B,1))*Xn.mean(axis=0)
 # PCA by computing SVD of Y
@@ -84,6 +92,7 @@ plt.legend(['Individual','Cumulative','Threshold'])
 plt.grid()
 plt.show()
 
+##Plotting principal component 1 and 2 against each other in a scatterplot
 # scipy.linalg.svd returns "Vh", which is the Hermitian (transpose)
 # of the vector V. So, for us to obtain the correct V, we transpose:
 V = Vh.T    
@@ -106,8 +115,9 @@ xlabel('PC{0}'.format(i+1))
 ylabel('PC{0}'.format(j+1))
 show()
 
-# We saw in 2.1.3 that the first 3 components explaiend more than 90
-# percent of the variance. Let's look at their coefficients:
+##the data projected onto the considered principal components
+#the first 3 components explaiend more than 90 percent of the variance. 
+#Let's look at their coefficients:
 pcs = [0,1,2]
 legendStrs = ['PC'+str(e+1) for e in pcs]
 c = ['r','g','b']
