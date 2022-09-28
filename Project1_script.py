@@ -18,6 +18,12 @@ raw_data[:,5] = np.asarray([classDicts[value] for value in classLabelss])
 X = raw_data[:, cols]
 X = X.astype(float)
 
+origin = np.array(X[:, 4], dtype=int).T
+K = origin.max()+1
+origin_encoding = np.zeros((origin.size, K))
+origin_encoding[np.arange(origin.size), origin] = 1
+X = np.concatenate((X[:, :-1], origin_encoding),axis=1)
+
 attributeNames = np.asarray(df.columns[cols])
 
 classLabels = raw_data[:,-1]
