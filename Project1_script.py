@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show, boxplot, xticks, subplot, yticks
+from matplotlib.pyplot import figure, plot, title, legend, xlabel, ylabel, show, boxplot, xticks, subplot, yticks, hist, ylim
 from scipy.linalg import svd
 
 filename = 'data.csv'
 df = pd.read_csv(filename)
 
 raw_data = df.values  
-cols = range(1, 10) 
+cols = range(1, 11) 
 
 classLabelss = raw_data[:,5]
 classNamess = sorted(set(classLabelss))
@@ -36,26 +36,30 @@ C = len(classNames)
 
 Xn = np.delete(X,4,1)
 B, D = Xn.shape
-attributeNamesXn=np.delete(attributeNames,4)
+attributeNamesXn=np.delete(attributeNames,[4,9])
+attributeNamesXn=np.append(attributeNamesXn,["famhist_A","famhist_P"])
 
-##Boxplot for each attribute except for famhist
+##Boxplot for each attribute
 #standardizing the data
 y1 = Xn - np.ones((B, 1))*Xn.mean(0)
 y1 = y1*(1/np.std(y1,0))
+figure(figsize=(9,9))
 boxplot(y1)
-xticks(range(1,9),attributeNamesXn)
+xticks(range(1,11),attributeNamesXn)
 show()
 
-##Boxplot for each attribute with famhist
-#standardizing the data
-y2 = X - np.ones((B, 1))*X.mean(0)
-y2 = y2*(1/np.std(y2,0))
-boxplot(y2)
-xticks(range(1,10),attributeNames)
+##Histogram for each attribute
+figure(figsize=(14,14))
+u = int(np.floor(np.sqrt(D))); v = int(np.ceil(float(D)/u))
+for i in range(D):
+    subplot(u,v,i+1)
+    hist(Xn[:,i],20)
+    xlabel(attributeNamesXn[i])
+    ylim(0,B/2)    
 show()
 
 ##Correlations between attributes
-Attributes = [0,1,2,3,4,5,6,7,8]
+Attributes = [0,1,2,3,4,5,6,7]
 NumAtr = len(Attributes)
 
 figure(figsize=(12,12))
@@ -64,13 +68,13 @@ for m1 in range(NumAtr):
         subplot(NumAtr, NumAtr, m1*NumAtr + m2 + 1)
         for c in range(C):
             class_mask = (y==c)
-            plot(X[class_mask,Attributes[m2]], X[class_mask,Attributes[m1]], '.')
+            plot(Xn[class_mask,Attributes[m2]], Xn[class_mask,Attributes[m1]], '.')
             if m1==NumAtr-1:
-                xlabel(attributeNames[Attributes[m2]])
+                xlabel(attributeNamesXn[Attributes[m2]])
             else:
                 xticks([])
             if m2==0:
-                ylabel(attributeNames[Attributes[m1]])
+                ylabel(attributeNamesXn[Attributes[m1]])
             else:
                 yticks([])
 legend(classNames)
@@ -79,10 +83,8 @@ show()
 ##Computing the PCA of the Data and 
 ##plotting the percent of variance explained by the principal components as well as the cumulative variance
 
-# Subtract mean value from data
-Y = Xn - np.ones((B,1))*Xn.mean(axis=0)
 # PCA by computing SVD of Y
-U,S,Vh = svd(Y,full_matrices=False)
+U,S,Vh = svd(y1,full_matrices=False)
 # Compute variance explained by principal components
 rho = (S*S) / (S*S).sum() 
 threshold = 0.9
@@ -103,7 +105,7 @@ plt.show()
 # of the vector V. So, for us to obtain the correct V, we transpose:
 V = Vh.T    
 # Project the centered data onto principal component space
-Z = Y @ V
+Z = y1 @ V
 # Indices of the principal components to be plotted
 i = 0
 j = 1
@@ -129,6 +131,7 @@ legendStrs = ['PC'+str(e+1) for e in pcs]
 c = ['r','g','b']
 bw = .2
 r = np.arange(1,D+1)
+figure(figsize=(10,10))
 for i in pcs:    
     plt.bar(r+i*bw, V[:,i], width=bw)
 plt.xticks(r+bw, attributeNamesXn)
@@ -136,5 +139,5 @@ plt.xlabel('Attributes')
 plt.ylabel('Component coefficients')
 plt.legend(legendStrs)
 plt.grid()
-plt.title('NanoNose: PCA Component Coefficients')
+plt.title('Heart Disease: PCA Component Coefficients')
 plt.show()
