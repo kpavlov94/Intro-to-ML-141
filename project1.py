@@ -139,6 +139,15 @@ plt.grid()
 plt.title('Heart Disease: PCA Component Coefficients')
 plt.show()
 
+print('PC1:')
+print(V[:,0].T)
+
+print('PC2:')
+print(V[:,1].T)
+
+print('PC3:')
+print(V[:,2].T)
+
 # Attribute standard deviations
 
 figure(figsize=(11,7))
